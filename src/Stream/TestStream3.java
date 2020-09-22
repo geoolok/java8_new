@@ -3,9 +3,9 @@ package Stream;
 import model.Person;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TestStream3 {
     List<Person> personList = Arrays.asList(
@@ -17,6 +17,83 @@ public class TestStream3 {
             new Person(33,"赵本山", Person.Status.FREE),
             new Person(33,"赵四", Person.Status.BUSY)
     );
+    /**
+     * 收集
+     * collect--将流转换为其他形式，接收一个collector接口的实现，用于将Stream中的元素汇总
+     */
+    //分组
+    @Test
+    public void test6(){
+        //按照Status分组
+        Map<Person.Status,List<Person>> statusListMap = personList.stream().collect(Collectors.groupingBy(Person::getStatus));
+        System.out.println(statusListMap);
+        System.out.println("---------------------");
+        //多级分组
+        Map<Person.Status,Map<String,List<Person>>> statusMapMap =  personList.stream().collect(Collectors.groupingBy(Person::getStatus, Collectors.groupingBy((person)->{
+            if(person.getAge() <20){
+                return "小于20";
+            }else {
+                return "大于20";
+            }
+        })));
+        System.out.println(statusMapMap);
+    }
+
+    @Test
+    public void test5(){
+        Long count = personList.stream().collect(Collectors.counting());
+        System.out.println(count);
+        System.out.println("---------------------");
+        Integer sumAge = personList.stream().collect(Collectors.summingInt((person->person.getAge())));
+        System.out.println(sumAge);
+        System.out.println("---------------------");
+        Optional op = personList.stream().collect(Collectors.maxBy((p1, p2)->Integer.compare(p1.getAge(),p2.getAge())));
+        System.out.println(op.get());
+    }
+
+    @Test
+    public void test4(){
+        //将person list 中的所有姓名提取出来
+        List<String> stringList =  personList.stream().map(Person::getName)
+                .collect(Collectors.toList());
+        stringList.forEach(System.out::println);
+        System.out.println("-----------------------");
+        //放入Set集合中
+        Set<String> stringSet = personList.stream().map(Person::getName)
+                .collect(Collectors.toSet());
+        stringSet.forEach(System.out::println);
+        System.out.println("-----------------------");
+        //放入LinkedList
+        List<String> linkedList =  personList.stream().map(Person::getName).collect(Collectors.toCollection(LinkedList::new));
+        linkedList.forEach(System.out::println);
+
+    }
+
+    /**
+     * 归约
+     * reduce(T identity, BinaryOperator) / reduce(BinaryOperator)--可以将流中的元素反复结合，得到一个值
+     */
+    @Test
+    public void test3(){
+        List<Integer> integerList = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+        //计算list所有元素的和
+        //这个reduce有起始值，不可能为空，所以返回的不是Optional
+        Integer integer1 = integerList.stream().reduce(0,(x,y)->x+y);
+        System.out.println(integer1);
+
+        System.out.println("------------");
+        //这个reduce没有起始值，可能为空，所以返回Optional
+        Optional<Integer> optionalInteger = integerList.stream().reduce(Integer::sum);
+        System.out.println(optionalInteger.get());
+
+        //计算person列表中所有人的年龄总和
+        Optional<Integer> optionalInteger1 = personList.stream()
+                .map(Person::getAge)
+                .reduce(Integer::sum);
+        System.out.println(optionalInteger1.get());
+    }
+
+
     /**
      * 查找与匹配
      * allMatch:检查是否匹配所有元素
