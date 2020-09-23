@@ -10,10 +10,10 @@ public class Test_Lambda {
     //左面参数，右面运行内容
     @Test
     public void test(){
-        testLamda("面包", (arg) -> System.out.println("您买了一个：" + arg));
+        testLambda("面包", (arg) -> System.out.println("您买了一个：" + arg));
     }
 
-    public void testLamda(String name, Consumer<String> consum){
-        consum.accept(name);
+    public void testLambda(String name, Consumer<String> consumer){
+        consumer.accept(name);
     }
 }

@@ -133,16 +133,18 @@ public class TestStream3 {
                 .anyMatch((x) -> x.getStatus().equals(Person.Status.BUSY));
         System.out.println(status2);
 
+        System.out.println("---------noneMatch---------");
         //noneMatch
         boolean status3 = personList.stream()
                 .noneMatch((x) -> x.getStatus().equals(Person.Status.BUSY));
         System.out.println(status3);
 
+        System.out.println("---------findFirst---------");
         //findFirst
         Optional<Person> personOptional = personList.stream().findFirst();
         System.out.println(personOptional.get());
 
-        //findAny 串行(stream)的情况下一般只返回第一个  并行(parallelStream)的情况返回不确定
+        //findAny 串行(stream)的情况下一般只返回第一个  并行(parallelStream)的情况返回随机
         Optional<Person> personOptional1 =  personList.parallelStream()
                 .filter((p) -> p.getStatus().equals(Person.Status.FREE))
                 .findAny();
